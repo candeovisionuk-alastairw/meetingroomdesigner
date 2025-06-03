@@ -5,15 +5,22 @@ import { OrbitControls } from '@react-three/drei';
 import { RoomBox } from './RoomBox';
 import TableMesh from './TableMesh';
 import { useState } from 'react';
+import { useRoomStore } from '@/lib/store';
 
 function RoomSceneWrapper() {
   const camera = useThree((state) => state.camera);
+  const { config } = useRoomStore();
+  const autoHide = config.wallStyle.autoHide;
+
   const [hideFrontWall, setHideFrontWall] = useState(true);
 
   useFrame(() => {
+    if (!autoHide) return;
     const camZ = camera.position.z;
     const shouldHide = camZ > 0;
-    if (shouldHide !== hideFrontWall) setHideFrontWall(shouldHide);
+    if (shouldHide !== hideFrontWall) {
+      setHideFrontWall(shouldHide);
+    }
   });
 
   return (

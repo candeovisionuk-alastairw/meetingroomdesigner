@@ -2,7 +2,7 @@
 
 import { useRoomStore } from '@/lib/store';
 import { useEffect, useMemo, useState } from 'react';
-import { useFrame, useLoader, useThree } from '@react-three/fiber';
+import { useFrame, useThree } from '@react-three/fiber';
 import * as THREE from 'three';
 
 interface RoomBoxProps {
@@ -12,7 +12,7 @@ interface RoomBoxProps {
 export function RoomBox({ hideFrontWall = true }: RoomBoxProps) {
   const { config } = useRoomStore();
   const { width, height, depth } = config.dimensions;
-  const { texture, color, mode, thickness, autoHide } = config.wallStyle;
+  const { color, thickness, autoHide } = config.wallStyle;
 
   const w = Math.min(Math.max(width, 0.1), 20);
   const h = Math.min(Math.max(height, 0.1), 10);
@@ -20,30 +20,19 @@ export function RoomBox({ hideFrontWall = true }: RoomBoxProps) {
 
   const camera = useThree((state) => state.camera);
 
+  const wallMaterial = useMemo(() => {
+    return new THREE.MeshStandardMaterial({
+      color: color || '#d3d3d3',
+      side: THREE.BackSide,
+    });
+  }, [color]);
+
   const [walls, setWalls] = useState({
     left: true,
     right: true,
     back: true,
     front: !hideFrontWall,
   });
-
-  let wallTexture: THREE.Texture | null = null;
-  try {
-    if (mode === 'texture' && texture === 'standard-gray') {
-      wallTexture = useLoader(THREE.TextureLoader, '/textures/grey_wall.jpg');
-      wallTexture.wrapS = THREE.RepeatWrapping;
-      wallTexture.wrapT = THREE.RepeatWrapping;
-      wallTexture.repeat.set(2, 2);
-    }
-  } catch (error) {
-    console.warn('⚠️ Wall texture failed to load.', error);
-  }
-
-  const wallMaterial = useMemo(() => {
-    return wallTexture
-      ? new THREE.MeshStandardMaterial({ map: wallTexture, side: THREE.BackSide })
-      : new THREE.MeshStandardMaterial({ color: color || '#ccc', side: THREE.BackSide });
-  }, [wallTexture, color]);
 
   useEffect(() => {
     console.log('ROOM DIMENSIONS:', { width: w, height: h, depth: d });
@@ -63,12 +52,12 @@ export function RoomBox({ hideFrontWall = true }: RoomBoxProps) {
     <group>
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]}>
         <planeGeometry args={[w, d]} />
-        <meshStandardMaterial color="lightgray" />
+        <meshStandardMaterial color="#d3d3d3" />
       </mesh>
 
       <mesh rotation={[Math.PI / 2, 0, 0]} position={[0, h, 0]}>
         <planeGeometry args={[w, d]} />
-        <meshStandardMaterial color="lightgray" />
+        <meshStandardMaterial color="#d3d3d3" />
       </mesh>
 
       {walls.left && (

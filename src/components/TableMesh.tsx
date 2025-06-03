@@ -79,36 +79,32 @@ export default function TableMesh() {
   // Oval table
   return (
     <group>
-      {/* Table Top (rotated to lie flat) */}
-      <a.mesh
-        position-y={spring.topY}
-        rotation={[-Math.PI / 2, 0, 0]}
-        scale-x={spring.scaleDia}
-        scale-z={spring.scaleDia}
-      >
+      {/* Table Top - flat cylinder */}
+      <a.mesh position-y={spring.topY} scale-x={spring.scaleDia} scale-z={spring.scaleDia}>
         <cylinderGeometry args={[0.5, 0.5, height, 32]} />
         <meshStandardMaterial color="#8B4513" />
       </a.mesh>
 
-      {/* Center Support */}
+      {/* Center Support Leg */}
       <a.mesh position-y={spring.legY}>
         <cylinderGeometry args={[legRadius, legRadius, legHeight, 20]} />
         <meshStandardMaterial color="#3a1f0f" />
       </a.mesh>
 
-      {/* Chairs: radial layout facing inward */}
-      {[0, 90, 180, 270].map((deg, i) => {
-        const rad = (deg * Math.PI) / 180;
-        const x = Math.cos(rad) * (diameter / 2 + 0.6);
-        const z = Math.sin(rad) * (diameter / 2 + 0.6);
-        return (
-          <ChairMesh
-            key={i}
-            position={[x, 0, z]}
-            rotation={[0, -rad, 0]} // face inward
-          />
-        );
-      })}
+      {/* Chairs around oval table, evenly spaced */}
+     {[0, 90, 180, 270].map((deg, i) => {
+            const rad = (deg * Math.PI) / 180;
+            const x = Math.cos(rad) * (diameter / 2 + 0.6);
+            const z = Math.sin(rad) * (diameter / 2 + 0.6);
+            const angleToCenter = Math.atan2(-z, -x) + Math.PI; // ✅ rotated 180°
+            return (
+                <ChairMesh
+                key={i}
+                position={[x, 0, z]}
+                rotation={[0, angleToCenter, 0]}
+                />
+            );
+            })}
     </group>
   );
 }
