@@ -1,17 +1,15 @@
-// src/lib/types.ts
-
 export type TableShape = 'rectangle' | 'oval';
 
 export interface RoomDimensions {
-  width: number; // in meters
+  width: number;
   depth: number;
   height: number;
 }
 
 export interface TableConfig {
   shape: TableShape;
-  width: number;  // total table width
-  depth: number;  // total table depth
+  width: number;
+  depth: number;
   seats: number;
 }
 
@@ -23,8 +21,17 @@ export interface EquipmentOptions {
   speakers: boolean;
 }
 
+export interface WallStyle {
+  mode: 'texture' | 'color';
+  texture: 'standard-gray'; // extendable later
+  color: string;
+  thickness: number;
+  autoHide: boolean;
+}
+
 export interface RoomConfig {
   dimensions: RoomDimensions;
   table: TableConfig;
   equipment: EquipmentOptions;
+  wallStyle: WallStyle;
 }
